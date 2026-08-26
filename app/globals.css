@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+:root {
+  /* Core palette — "Clinical Signage" system */
+  --ink: #0E1B1A;           /* near-black text with a teal cast */
+  --paper: #F6F8F7;         /* clinical off-white */
+  --panel: #FFFFFF;
+  --line: #DDE4E2;
+
+  --teal-950: #0A2D2C;
+  --teal-900: #0F3D3B;
+  --teal-800: #164E4E;
+  --teal-700: #1B5F5C;
+  --teal-600: #21716C;
+  --teal-100: #E4EEEC;
+  --teal-50:  #F1F6F5;
+
+  --amber-600: #B9791F;
+  --amber-500: #E0A238;
+  --amber-100: #FBEACC;
+
+  --red-600: #B3413A;
+  --red-100: #F7E2E0;
+
+  --green-600: #2F8F5B;
+  --green-100: #E1F2E8;
+
+  --blue-600: #2E6FA7;
+  --blue-100: #E1EDF7;
+
+  --slate-500: #63706E;
+  --slate-400: #8B9694;
+
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --font-display: var(--font-space-grotesk);
+  --font-sans: var(--font-ibm-plex-sans);
+  --font-board: var(--font-jetbrains-mono);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-ink: var(--ink);
+  --color-paper: var(--paper);
+  --color-panel: var(--panel);
+  --color-line: var(--line);
+
+  --color-teal-950: var(--teal-950);
+  --color-teal-900: var(--teal-900);
+  --color-teal-800: var(--teal-800);
+  --color-teal-700: var(--teal-700);
+  --color-teal-600: var(--teal-600);
+  --color-teal-100: var(--teal-100);
+  --color-teal-50: var(--teal-50);
+
+  --color-amber-600: var(--amber-600);
+  --color-amber-500: var(--amber-500);
+  --color-amber-100: var(--amber-100);
+
+  --color-red-600: var(--red-600);
+  --color-red-100: var(--red-100);
+
+  --color-green-600: var(--green-600);
+  --color-green-100: var(--green-100);
+
+  --color-blue-600: var(--blue-600);
+  --color-blue-100: var(--blue-100);
+
+  --color-slate-500: var(--slate-500);
+  --color-slate-400: var(--slate-400);
+
+  --font-display: var(--font-display);
+  --font-sans: var(--font-sans);
+  --font-board: var(--font-board);
+}
+
+* {
+  border-color: var(--line);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ---- Split-flap / departure-board signature element ---- */
+.flap-board {
+  background: linear-gradient(180deg, var(--teal-950) 0%, #071F1E 100%);
+  border: 1px solid #06201F;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.04),
+    0 20px 40px -20px rgba(7, 31, 30, 0.6);
+}
+
+.flap-digit {
+  font-family: var(--font-board), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: var(--amber-500);
+  text-shadow: 0 0 18px rgba(224, 162, 56, 0.35);
+}
+
+.flap-label {
+  font-family: var(--font-board), ui-monospace, monospace;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #7FA6A1;
+}
+
+.scanline {
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(255,255,255,0.025) 0px,
+    rgba(255,255,255,0.025) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+/* Focus visibility */
+:focus-visible {
+  outline: 2px solid var(--amber-600);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
