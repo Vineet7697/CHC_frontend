@@ -11,13 +11,9 @@ import { Modal, ConfirmDialog } from "@/components/modals/Modal";
 import { TextField } from "@/components/forms/Field";
 import { useToast } from "@/components/common/Toast";
 
-import {
-  getDoctors,
-  addDoctor,
-  updateDoctor,
-} from "@/services/adminservice";
+import { getDoctors, addDoctor, updateDoctor } from "@/services/adminservice";
 
-import type { Doctor } from "@/lib/types";
+import type { AdminDoctor } from "@/services/adminservice";
 
 const SPECIALIZATIONS = [
   "Dermatology",
@@ -45,7 +41,7 @@ export default function AdminDoctorsPage() {
   // STATE
   // ==========================================
 
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [doctors, setDoctors] = useState<AdminDoctor[]>([]);
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -53,9 +49,9 @@ export default function AdminDoctorsPage() {
 
   const [addOpen, setAddOpen] = useState(false);
 
-  const [editing, setEditing] = useState<Doctor | null>(null);
+  const [editing, setEditing] = useState<AdminDoctor | null>(null);
 
-  const [toggling, setToggling] = useState<Doctor | null>(null);
+  const [toggling, setToggling] = useState<AdminDoctor | null>(null);
 
   const [form, setForm] = useState(emptyForm);
 
@@ -73,43 +69,25 @@ export default function AdminDoctorsPage() {
         setLoading(true);
       }
 
-      const response = await getDoctors();
+      const list = await getDoctors();
 
-      const data = response?.data ?? response?.doctors ?? response;
-
-      const list = Array.isArray(data) ? data : [];
-
-      const normalizedDoctors: Doctor[] = list.map((doctor: any) => ({
+      const normalizedDoctors: AdminDoctor[] = list.map((doctor: any) => ({
         id: doctor.id,
 
-        code:
-          doctor.code ??
-          doctor.doctor_code ??
-          doctor.doctorCode ??
-          "",
+        code: doctor.code ?? doctor.doctor_code ?? doctor.doctorCode ?? "",
 
-        name:
-          doctor.name ??
-          doctor.full_name ??
-          doctor.fullName ??
-          "",
+        name: doctor.name ?? doctor.full_name ?? doctor.fullName ?? "",
 
         qualification: doctor.qualification ?? "",
 
         specialization: doctor.specialization ?? "",
 
         mobile:
-          doctor.mobile ??
-          doctor.mobile_number ??
-          doctor.mobileNumber ??
-          "",
+          doctor.mobile ?? doctor.mobile_number ?? doctor.mobileNumber ?? "",
 
         email: doctor.email ?? "",
 
-        status:
-          doctor.status === "INACTIVE"
-            ? "INACTIVE"
-            : "ACTIVE",
+        status: doctor.status === "INACTIVE" ? "INACTIVE" : "ACTIVE",
       }));
 
       setDoctors(normalizedDoctors);
@@ -118,8 +96,7 @@ export default function AdminDoctorsPage() {
 
       show(
         "error",
-        error?.response?.data?.message ||
-          "Failed to load doctors.",
+        error?.response?.data?.message || "Failed to load doctors.",
       );
 
       setDoctors([]);
@@ -175,8 +152,7 @@ export default function AdminDoctorsPage() {
       if (!form.password.trim()) {
         next.password = "Password is required";
       } else if (form.password.length < 6) {
-        next.password =
-          "Password must contain at least 6 characters";
+        next.password = "Password must contain at least 6 characters";
       }
     }
 
@@ -209,8 +185,7 @@ export default function AdminDoctorsPage() {
 
       show(
         "success",
-        response?.message ||
-          `${form.name} registered successfully.`,
+        response?.message || `${form.name} registered successfully.`,
       );
 
       setAddOpen(false);
@@ -225,8 +200,7 @@ export default function AdminDoctorsPage() {
 
       show(
         "error",
-        error?.response?.data?.message ||
-          "Failed to register doctor.",
+        error?.response?.data?.message || "Failed to register doctor.",
       );
     } finally {
       setSaving(false);
@@ -237,16 +211,16 @@ export default function AdminDoctorsPage() {
   // OPEN EDIT
   // ==========================================
 
-  function openEdit(d: Doctor) {
+  function openEdit(d: AdminDoctor) {
     setEditing(d);
 
     setForm({
-      code: d.code,
-      name: d.name,
-      qualification: d.qualification,
-      specialization: d.specialization,
-      mobile: d.mobile,
-      email: d.email,
+      code: d.code ?? "",
+      name: d.name ?? "",
+      qualification: d.qualification ?? "",
+      specialization: d.specialization ?? "",
+      mobile: d.mobile ?? "",
+      email: d.email ?? "",
       password: "",
     });
 
@@ -273,10 +247,7 @@ export default function AdminDoctorsPage() {
         email: form.email.trim(),
       });
 
-      show(
-        "success",
-        `${form.name}'s details updated.`,
-      );
+      show("success", `${form.name}'s details updated.`);
 
       setEditing(null);
 
@@ -290,8 +261,7 @@ export default function AdminDoctorsPage() {
 
       show(
         "error",
-        error?.response?.data?.message ||
-          "Failed to update doctor.",
+        error?.response?.data?.message || "Failed to update doctor.",
       );
     } finally {
       setSaving(false);
@@ -308,10 +278,7 @@ export default function AdminDoctorsPage() {
     try {
       setSaving(true);
 
-      const newStatus =
-        toggling.status === "ACTIVE"
-          ? "INACTIVE"
-          : "ACTIVE";
+      const newStatus = toggling.status === "ACTIVE" ? "INACTIVE" : "ACTIVE";
 
       await updateDoctor(toggling.id, {
         status: newStatus,
@@ -331,23 +298,17 @@ export default function AdminDoctorsPage() {
       show(
         "success",
         `${toggling.name} ${
-          newStatus === "INACTIVE"
-            ? "deactivated"
-            : "reactivated"
+          newStatus === "INACTIVE" ? "deactivated" : "reactivated"
         }.`,
       );
 
       setToggling(null);
     } catch (error: any) {
-      console.error(
-        "Toggle doctor error:",
-        error,
-      );
+      console.error("Toggle doctor error:", error);
 
       show(
         "error",
-        error?.response?.data?.message ||
-          "Failed to update doctor status.",
+        error?.response?.data?.message || "Failed to update doctor status.",
       );
     } finally {
       setSaving(false);
@@ -358,23 +319,17 @@ export default function AdminDoctorsPage() {
   // TABLE COLUMNS
   // ==========================================
 
-  const columns: Column<Doctor>[] = [
+  const columns: Column<AdminDoctor>[] = [
     {
       header: "Code",
       accessor: (d) => (
-        <span className="text-slate-400 font-mono text-xs">
-          {d.code}
-        </span>
+        <span className="text-slate-400 font-mono text-xs">{d.code}</span>
       ),
     },
 
     {
       header: "Name",
-      accessor: (d) => (
-        <span className="font-medium text-ink">
-          {d.name}
-        </span>
-      ),
+      accessor: (d) => <span className="font-medium text-ink">{d.name}</span>,
     },
 
     {
@@ -394,9 +349,7 @@ export default function AdminDoctorsPage() {
 
     {
       header: "Status",
-      accessor: (d) => (
-        <StatusBadge status={d.status} />
-      ),
+      accessor: (d) => <StatusBadge status={d.status} />,
     },
 
     {
@@ -404,7 +357,6 @@ export default function AdminDoctorsPage() {
 
       accessor: (d) => (
         <div className="flex gap-1.5">
-
           {/* EDIT */}
 
           <button
@@ -428,9 +380,7 @@ export default function AdminDoctorsPage() {
                 : `Reactivate ${d.name}`
             }
             className={`w-8 h-8 grid place-items-center rounded-lg border border-line hover:bg-teal-50 disabled:opacity-50 ${
-              d.status === "ACTIVE"
-                ? "text-red-600"
-                : "text-green-600"
+              d.status === "ACTIVE" ? "text-red-600" : "text-green-600"
             }`}
           >
             {d.status === "ACTIVE" ? (
@@ -439,7 +389,6 @@ export default function AdminDoctorsPage() {
               <UserCheck size={13} />
             )}
           </button>
-
         </div>
       ),
     },
@@ -452,11 +401,8 @@ export default function AdminDoctorsPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-
         <div>
-          <h1 className="font-display text-2xl font-bold text-ink">
-            Doctors
-          </h1>
+          <h1 className="font-display text-2xl font-bold text-ink">Doctors</h1>
 
           <p className="text-sm text-slate-500 mt-1">
             Manage doctor profiles and specializations.
@@ -465,19 +411,14 @@ export default function AdminDoctorsPage() {
 
         <Panel>
           <div className="py-16 text-center">
-
             <RefreshCw
               size={28}
               className="mx-auto animate-spin text-teal-700"
             />
 
-            <p className="text-sm text-slate-500 mt-3">
-              Loading doctors...
-            </p>
-
+            <p className="text-sm text-slate-500 mt-3">Loading doctors...</p>
           </div>
         </Panel>
-
       </div>
     );
   }
@@ -488,15 +429,11 @@ export default function AdminDoctorsPage() {
 
   return (
     <div className="space-y-6">
-
       {/* HEADER */}
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-
         <div>
-          <h1 className="font-display text-2xl font-bold text-ink">
-            Doctors
-          </h1>
+          <h1 className="font-display text-2xl font-bold text-ink">Doctors</h1>
 
           <p className="text-sm text-slate-500 mt-1">
             Manage doctor profiles and specializations.
@@ -504,7 +441,6 @@ export default function AdminDoctorsPage() {
         </div>
 
         <div className="flex items-center gap-2">
-
           {/* REFRESH */}
 
           <button
@@ -513,13 +449,7 @@ export default function AdminDoctorsPage() {
             disabled={refreshing}
             className="inline-flex items-center gap-2 border border-line bg-white text-slate-700 text-sm font-semibold rounded-lg px-3 py-2.5 hover:bg-slate-50 disabled:opacity-50"
           >
-            <RefreshCw
-              size={15}
-              className={
-                refreshing ? "animate-spin" : ""
-              }
-            />
-
+            <RefreshCw size={15} className={refreshing ? "animate-spin" : ""} />
             Refresh
           </button>
 
@@ -535,25 +465,19 @@ export default function AdminDoctorsPage() {
             className="inline-flex items-center gap-2 bg-teal-800 text-white text-sm font-semibold rounded-lg px-4 py-2.5 hover:bg-teal-900 shrink-0"
           >
             <Plus size={15} />
-
             Add doctor
           </button>
-
         </div>
-
       </div>
 
       {/* TABLE */}
 
       <Panel className="!p-0">
-
         <DataTable
           rows={doctors}
-          rowKey={(d) => d.id}
+          rowKey={(d) => String(d.id)}
           columns={columns}
-          searchKeys={(d) =>
-            `${d.name} ${d.code} ${d.specialization}`
-          }
+          searchKeys={(d) => `${d.name} ${d.code} ${d.specialization}`}
           searchPlaceholder="Search doctors..."
           filters={[
             {
@@ -569,12 +493,9 @@ export default function AdminDoctorsPage() {
               value: "INACTIVE",
             },
           ]}
-          filterFn={(d, v) =>
-            v === "ALL" || d.status === v
-          }
+          filterFn={(d, v) => v === "ALL" || d.status === v}
           emptyTitle="No doctors found"
         />
-
       </Panel>
 
       {/* ==========================================
@@ -583,13 +504,10 @@ export default function AdminDoctorsPage() {
 
       <Modal
         open={addOpen}
-        onClose={() =>
-          !saving && setAddOpen(false)
-        }
+        onClose={() => !saving && setAddOpen(false)}
         title="Add doctor"
         subtitle="Register a new doctor profile and login account."
       >
-
         <TextField
           id="code"
           label="Doctor code"
@@ -707,12 +625,9 @@ export default function AdminDoctorsPage() {
         />
 
         <div className="flex gap-2.5 mt-2">
-
           <button
             type="button"
-            onClick={() =>
-              !saving && setAddOpen(false)
-            }
+            onClick={() => !saving && setAddOpen(false)}
             className="flex-1 text-sm font-semibold border border-line rounded-lg py-2.5 text-slate-600 hover:bg-teal-50"
           >
             Cancel
@@ -724,13 +639,9 @@ export default function AdminDoctorsPage() {
             disabled={saving}
             className="flex-1 text-sm font-semibold bg-teal-800 text-white rounded-lg py-2.5 hover:bg-teal-900 disabled:opacity-50"
           >
-            {saving
-              ? "Registering..."
-              : "Register doctor"}
+            {saving ? "Registering..." : "Register doctor"}
           </button>
-
         </div>
-
       </Modal>
 
       {/* ==========================================
@@ -739,13 +650,10 @@ export default function AdminDoctorsPage() {
 
       <Modal
         open={!!editing}
-        onClose={() =>
-          !saving && setEditing(null)
-        }
+        onClose={() => !saving && setEditing(null)}
         title="Edit doctor"
         subtitle={editing?.name}
       >
-
         <TextField
           id="ename"
           label="Doctor name"
@@ -818,12 +726,9 @@ export default function AdminDoctorsPage() {
         />
 
         <div className="flex gap-2.5 mt-2">
-
           <button
             type="button"
-            onClick={() =>
-              !saving && setEditing(null)
-            }
+            onClick={() => !saving && setEditing(null)}
             className="flex-1 text-sm font-semibold border border-line rounded-lg py-2.5 text-slate-600 hover:bg-teal-50"
           >
             Cancel
@@ -835,13 +740,9 @@ export default function AdminDoctorsPage() {
             disabled={saving}
             className="flex-1 text-sm font-semibold bg-teal-800 text-white rounded-lg py-2.5 hover:bg-teal-900 disabled:opacity-50"
           >
-            {saving
-              ? "Saving..."
-              : "Save changes"}
+            {saving ? "Saving..." : "Save changes"}
           </button>
-
         </div>
-
       </Modal>
 
       {/* ==========================================
@@ -850,9 +751,7 @@ export default function AdminDoctorsPage() {
 
       <ConfirmDialog
         open={!!toggling}
-        onClose={() =>
-          !saving && setToggling(null)
-        }
+        onClose={() => !saving && setToggling(null)}
         onConfirm={handleToggleDoctor}
         title={
           toggling?.status === "ACTIVE"
@@ -865,15 +764,10 @@ export default function AdminDoctorsPage() {
             : "become active again."
         }`}
         confirmLabel={
-          toggling?.status === "ACTIVE"
-            ? "Deactivate"
-            : "Reactivate"
+          toggling?.status === "ACTIVE" ? "Deactivate" : "Reactivate"
         }
-        danger={
-          toggling?.status === "ACTIVE"
-        }
+        danger={toggling?.status === "ACTIVE"}
       />
-
     </div>
   );
 }
