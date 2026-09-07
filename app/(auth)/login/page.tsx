@@ -7,7 +7,7 @@ import { Loader2, LogIn } from "lucide-react";
 import { TextField, SelectField } from "@/components/forms/Field";
 import { useToast } from "@/components/common/Toast";
 import { login } from "@/services/authservice";
-
+import { Eye, EyeOff } from "lucide-react";
 type Tab = "patient" | "staff";
 
 export default function LoginPage() {
@@ -20,7 +20,7 @@ export default function LoginPage() {
   const [staffRole, setStaffRole] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
-
+const [showPassword, setShowPassword] = useState(false);
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
@@ -208,31 +208,41 @@ export default function LoginPage() {
           required
           inputMode="numeric"
         />
+{/* =========================
+    PASSWORD
+========================= */}
 
-        {/* =========================
-            PASSWORD
-        ========================= */}
+<div className="relative">
+  <TextField
+    id="password"
+    label="Password"
+    type={showPassword ? "text" : "password"}
+    placeholder="••••••••"
+    value={password}
+    onChange={(e) => {
+      setPassword(e.target.value);
 
-        <TextField
-          id="password"
-          label="Password"
-          type="password"
-          placeholder="••••••••"
-          value={password}
-          onChange={(e) => {
-            setPassword(e.target.value);
+      if (errors.password) {
+        setErrors((prev) => {
+          const updated = { ...prev };
+          delete updated.password;
+          return updated;
+        });
+      }
+    }}
+    error={errors.password}
+    required
+  />
 
-            if (errors.password) {
-              setErrors((prev) => {
-                const updated = { ...prev };
-                delete updated.password;
-                return updated;
-              });
-            }
-          }}
-          error={errors.password}
-          required
-        />
+  <button
+    type="button"
+    onClick={() => setShowPassword((prev) => !prev)}
+    tabIndex={-1}
+    className="absolute right-3 top-[38px] text-slate-400 hover:text-slate-600"
+  >
+    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+  </button>
+</div>
 
         {/* =========================
             STAFF ROLE
