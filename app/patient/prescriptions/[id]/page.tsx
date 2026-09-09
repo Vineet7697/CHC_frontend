@@ -23,11 +23,7 @@ import { Panel } from "@/components/cards/Card";
 // STATUS BADGE
 // ======================================================
 
-function StatusBadge({
-  status,
-}: {
-  status: string;
-}) {
+function StatusBadge({ status }: { status: string }) {
   switch (status) {
     case "GIVEN":
       return (
@@ -59,11 +55,7 @@ function StatusBadge({
 // PRESCRIPTION STATUS
 // ======================================================
 
-function PrescriptionStatusBadge({
-  status,
-}: {
-  status: string;
-}) {
+function PrescriptionStatusBadge({ status }: { status: string }) {
   if (status === "COMPLETED") {
     return (
       <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700">
@@ -94,11 +86,7 @@ function PrescriptionStatusBadge({
 // MEDICINE CARD
 // ======================================================
 
-function MedicineCard({
-  medicine,
-}: {
-  medicine: PatientPrescriptionMedicine;
-}) {
+function MedicineCard({ medicine }: { medicine: PatientPrescriptionMedicine }) {
   const isGiven = medicine.dispensing_status === "GIVEN";
   const isUnavailable = medicine.dispensing_status === "UNAVAILABLE";
   const isPending = medicine.dispensing_status === "PENDING";
@@ -118,9 +106,7 @@ function MedicineCard({
             </h3>
 
             {medicine.unit && (
-              <p className="mt-0.5 text-xs text-slate-500">
-                {medicine.unit}
-              </p>
+              <p className="mt-0.5 text-xs text-slate-500">{medicine.unit}</p>
             )}
           </div>
         </div>
@@ -196,10 +182,7 @@ function MedicineCard({
       {isUnavailable && (
         <div className="mt-4 rounded-xl border border-red-100 bg-red-50 px-4 py-3">
           <div className="flex items-start gap-2">
-            <XCircle
-              size={16}
-              className="mt-0.5 shrink-0 text-red-700"
-            />
+            <XCircle size={16} className="mt-0.5 shrink-0 text-red-700" />
 
             <div>
               <p className="text-xs font-semibold text-red-700">
@@ -218,10 +201,7 @@ function MedicineCard({
       {isPending && (
         <div className="mt-4 rounded-xl border border-amber-100 bg-amber-50 px-4 py-3">
           <div className="flex items-start gap-2">
-            <Clock3
-              size={16}
-              className="mt-0.5 shrink-0 text-amber-700"
-            />
+            <Clock3 size={16} className="mt-0.5 shrink-0 text-amber-700" />
 
             <div>
               <p className="text-xs font-semibold text-amber-700">
@@ -479,7 +459,7 @@ export default function PatientPrescriptionDetailsPage({
             <p className="text-xs text-slate-500">Completed at</p>
 
             <p className="mt-1 text-sm font-semibold text-emerald-700">
-              {prescription.completed_at}
+              {new Date(prescription.completed_at).toLocaleDateString("en-GB")}
             </p>
           </div>
         )}
@@ -533,9 +513,7 @@ export default function PatientPrescriptionDetailsPage({
 
       <div>
         <div className="mb-3">
-          <h2 className="font-display text-lg font-bold text-ink">
-            Medicines
-          </h2>
+          <h2 className="font-display text-lg font-bold text-ink">Medicines</h2>
 
           <p className="mt-1 text-sm text-slate-500">
             See which medicines were prescribed and what was provided by the
