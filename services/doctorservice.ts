@@ -119,3 +119,53 @@ export const doctorService = {
 };
 
 export const getMedicines = doctorService.getMedicines;
+
+
+
+// ==============================
+// OPD MANAGEMENT
+// ==============================
+
+export interface AdminOpdRoom {
+  id: number;
+  number: string;
+
+  roomName: string | null;
+  floor: string | null;
+
+  doctorId: number | null;
+  doctorName: string | null;
+  specialization: string | null;
+
+  opdSessionId: number | null;
+
+  status: "NOT_STARTED" | "RUNNING" | "ENDED" | "CLOSED" | null;
+
+  startedAt: string | null;
+  endedAt: string | null;
+
+  currentToken: string | null;
+  totalPatients: number;
+}
+
+export const getTodayOpd = async () => {
+  const response = await api.get("/admin/opd/today");
+
+  return response.data;
+};
+
+export const startOpd = async (opdSessionId: number) => {
+  const response = await api.post("/admin/opd/start", {
+    opdSessionId,
+  });
+
+  return response.data;
+};
+
+export const endOpd = async (opdSessionId: number) => {
+  const response = await api.post("/admin/opd/end", {
+    opdSessionId,
+  });
+
+  return response.data;
+};

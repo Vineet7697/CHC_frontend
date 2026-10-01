@@ -6,6 +6,7 @@ export interface RegisterPayload {
   gender: string;
   mobile: string;
   address?: string;
+  abhaNumber: string;
   password: string;
 }
 

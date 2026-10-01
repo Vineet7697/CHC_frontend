@@ -87,16 +87,37 @@ export function SelectField({
   hint?: string;
   options: { value: string; label: string }[];
 }) {
+  // Remove duplicate option values
+  const uniqueOptions = Array.from(
+    new Map(
+      options.map((option) => [String(option.value), option])
+    ).values()
+  );
+
   return (
-    <FieldWrap label={label} required={required} error={error} hint={hint} id={id}>
+    <FieldWrap
+      label={label}
+      required={required}
+      error={error}
+      hint={hint}
+      id={id}
+    >
       <select
         id={id}
-        className={`${baseInput} ${error ? "border-red-400 focus:border-red-500" : "border-line focus:border-teal-700"}`}
+        className={`${baseInput} ${
+          error
+            ? "border-red-400 focus:border-red-500"
+            : "border-line focus:border-teal-700"
+        }`}
         {...props}
       >
         <option value="">Select...</option>
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>
+
+        {uniqueOptions.map((o) => (
+          <option
+            key={String(o.value)}
+            value={String(o.value)}
+          >
             {o.label}
           </option>
         ))}

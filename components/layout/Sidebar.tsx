@@ -64,12 +64,7 @@ export default function Sidebar({
   return (
     <>
       <aside className="hidden h-screen w-[274px] shrink-0 border-r border-line bg-panel lg:flex lg:flex-col">
-        {/* ==================================================
-            BRAND
-            IMPORTANT:
-            No Link here.
-            So clicking header will NOT go home.
-        ================================================== */}
+
 
         <div className="flex h-[92px] shrink-0 items-center gap-3 border-b border-line px-5">
           <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-teal-800 text-white">
@@ -93,7 +88,7 @@ export default function Sidebar({
             NAVIGATION
         ================================================== */}
 
-        <div className="flex-1 overflow-y-auto px-3 py-5">
+       <div className="flex-1 px-3 py-5 overflow-hidden">
           <p className="mb-3 px-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">
             {ROLE_LABEL[role]}
           </p>

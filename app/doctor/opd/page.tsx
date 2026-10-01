@@ -22,7 +22,7 @@ import {
   startOpd,
   endOpd,
   type AdminOpdRoom,
-} from "@/services/adminservice";
+} from "@/services/doctorservice";
 
 export default function AdminOpdPage() {
   const { show } = useToast();
@@ -315,7 +315,7 @@ export default function AdminOpdPage() {
                 rooms.map((room) => (
 
                   <tr
-                    key={room.id}
+                  key={`${room.id}-${room.opdSessionId}`}
                     className="
                       border-t
                       border-line

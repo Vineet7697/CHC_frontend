@@ -50,11 +50,7 @@ export interface PendingPrescription {
   prescribed_at?: string | null;
   completed_at?: string | null;
 
-  prescription_status:
-    | "ACTIVE"
-    | "COMPLETED"
-    | "CANCELLED"
-    | string;
+  prescription_status: "ACTIVE" | "COMPLETED" | "CANCELLED" | string;
 
   medicine_count?: number | string;
 
@@ -179,5 +175,16 @@ export const clinicService = {
     );
 
     return response.data;
+  },
+
+  getPrescriptionReceipt: async (prescriptionId: string | number) => {
+    const response = await api.get(
+      `/clinic/prescriptions/${prescriptionId}/receipt?print=true`,
+      {
+        responseType: "text",
+      },
+    );
+
+    return response;
   },
 };

@@ -9,6 +9,7 @@ import {
   ArrowRight,
   MapPin,
   Clock,
+  FileText,
 } from "lucide-react";
 
 import { Panel } from "@/components/cards/Card";
@@ -305,23 +306,19 @@ export default function PatientDashboard() {
         {/* NOTIFICATIONS */}
 
         <Link
-          href="/patient/notifications"
+          href="/patient/certificates/apply"
           className="bg-panel border border-line rounded-2xl p-5 hover:border-teal-700 transition-colors group relative"
         >
           <span className="grid place-items-center w-10 h-10 rounded-xl bg-teal-100 text-teal-700 mb-3 group-hover:bg-teal-800 group-hover:text-white transition-colors">
-            <Bell size={18} />
+            <FileText size={18} />
           </span>
 
           <p className="font-display font-semibold text-ink">
-            Notifications
+            Apply for Certificates
           </p>
 
           <p className="text-xs text-slate-500 mt-1">
-            {unread > 0
-              ? `${unread} unread update${
-                  unread > 1 ? "s" : ""
-                }`
-              : "You're all caught up"}
+            Apply for medical certificates and view your requests
           </p>
         </Link>
 

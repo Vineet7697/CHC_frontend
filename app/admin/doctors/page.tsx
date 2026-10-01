@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import api from "@/lib/api";
 
 import { Plus, Pencil, UserX, UserCheck, RefreshCw } from "lucide-react";
 
@@ -24,11 +25,35 @@ const SPECIALIZATIONS = [
   "Pediatrics",
 ];
 
-const emptyForm = {
+const DAYS = [
+  { value: "MONDAY", label: "Mon" },
+  { value: "TUESDAY", label: "Tue" },
+  { value: "WEDNESDAY", label: "Wed" },
+  { value: "THURSDAY", label: "Thu" },
+  { value: "FRIDAY", label: "Fri" },
+  { value: "SATURDAY", label: "Sat" },
+  { value: "SUNDAY", label: "Sun" },
+];
+
+type DoctorForm = {
+  code: string;
+  name: string;
+  qualification: string;
+  specialization: string;
+  departmentId: string;
+  workingDays: string[];
+  mobile: string;
+  email: string;
+  password: string;
+};
+
+const emptyForm: DoctorForm = {
   code: "",
   name: "",
   qualification: "",
   specialization: "",
+  departmentId: "",
+  workingDays: [],
   mobile: "",
   email: "",
   password: "",
@@ -43,6 +68,12 @@ export default function AdminDoctorsPage() {
 
   const [doctors, setDoctors] = useState<AdminDoctor[]>([]);
 
+  const [departments, setDepartments] = useState<
+    { id: number; name: string }[]
+  >([]);
+
+  const [loadingDepartments, setLoadingDepartments] = useState(false);
+
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -53,7 +84,7 @@ export default function AdminDoctorsPage() {
 
   const [toggling, setToggling] = useState<AdminDoctor | null>(null);
 
-  const [form, setForm] = useState(emptyForm);
+  const [form, setForm] = useState<DoctorForm>(emptyForm);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -81,6 +112,16 @@ export default function AdminDoctorsPage() {
         qualification: doctor.qualification ?? "",
 
         specialization: doctor.specialization ?? "",
+
+        departmentId: doctor.departmentId ?? null,
+
+        departmentName: doctor.departmentName ?? "",
+
+        workingDays: Array.isArray(doctor.workingDays)
+          ? doctor.workingDays
+          : typeof doctor.workingDays === "string" && doctor.workingDays
+            ? doctor.workingDays.split(",")
+            : [],
 
         mobile:
           doctor.mobile ?? doctor.mobile_number ?? doctor.mobileNumber ?? "",
@@ -111,6 +152,34 @@ export default function AdminDoctorsPage() {
   // ==========================================
 
   useEffect(() => {
+    const loadDepartments = async () => {
+      try {
+        setLoadingDepartments(true);
+
+        const response = await api.get("/certificates/departments");
+
+        const list = response.data?.data || response.data || [];
+
+        setDepartments(
+          list.map((department: any) => ({
+            id: Number(department.id),
+            name: department.name,
+          })),
+        );
+      } catch (error: any) {
+        console.error("Get departments error:", error);
+
+        show(
+          "error",
+          error?.response?.data?.message ||
+            "Failed to load departments.",
+        );
+      } finally {
+        setLoadingDepartments(false);
+      }
+    };
+
+    loadDepartments();
     loadDoctors();
   }, []);
 
@@ -135,6 +204,14 @@ export default function AdminDoctorsPage() {
 
     if (!form.specialization.trim()) {
       next.specialization = "Specialization is required";
+    }
+
+    if (!form.departmentId) {
+      next.departmentId = "Department is required";
+    }
+
+    if (form.workingDays.length === 0) {
+      next.workingDays = "Select at least one working day";
     }
 
     const mobile = form.mobile.replace(/\s/g, "");
@@ -178,6 +255,8 @@ export default function AdminDoctorsPage() {
         name: form.name.trim(),
         qualification: form.qualification.trim(),
         specialization: form.specialization.trim(),
+        departmentId: Number(form.departmentId),
+        workingDays: form.workingDays,
         mobile,
         email: form.email.trim(),
         password: form.password,
@@ -219,6 +298,8 @@ export default function AdminDoctorsPage() {
       name: d.name ?? "",
       qualification: d.qualification ?? "",
       specialization: d.specialization ?? "",
+      departmentId: d.departmentId ? String(d.departmentId) : "",
+      workingDays: Array.isArray(d.workingDays) ? d.workingDays : [],
       mobile: d.mobile ?? "",
       email: d.email ?? "",
       password: "",
@@ -243,6 +324,8 @@ export default function AdminDoctorsPage() {
         name: form.name.trim(),
         qualification: form.qualification.trim(),
         specialization: form.specialization.trim(),
+        departmentId: Number(form.departmentId),
+        workingDays: form.workingDays,
         mobile: form.mobile.replace(/\s/g, ""),
         email: form.email.trim(),
       });
@@ -340,6 +423,30 @@ export default function AdminDoctorsPage() {
     {
       header: "Specialization",
       accessor: (d) => d.specialization,
+    },
+    {
+      header: "Department",
+      accessor: (d) => (
+        <span className="text-sm text-slate-700">
+          {d.departmentName || "-"}
+        </span>
+      ),
+    },
+
+    {
+      header: "Working Days",
+      accessor: (d) => (
+        <div className="flex flex-wrap gap-1 max-w-[220px]">
+          {(d.workingDays || []).map((day) => (
+            <span
+              key={day}
+              className="rounded-md bg-teal-50 px-1.5 py-0.5 text-[10px] font-semibold text-teal-800"
+            >
+              {day.slice(0, 3)}
+            </span>
+          ))}
+        </div>
+      ),
     },
 
     {
@@ -477,7 +584,7 @@ export default function AdminDoctorsPage() {
           rows={doctors}
           rowKey={(d) => String(d.id)}
           columns={columns}
-          searchKeys={(d) => `${d.name} ${d.code} ${d.specialization}`}
+          searchKeys={(d) => `${d.name} ${d.code} ${d.specialization} ${d.departmentName || ""}`}
           searchPlaceholder="Search doctors..."
           filters={[
             {
@@ -573,6 +680,77 @@ export default function AdminDoctorsPage() {
             <option key={s} value={s} />
           ))}
         </datalist>
+
+        <div className="space-y-1.5">
+          <label className="text-sm font-medium text-slate-700">
+            Department <span className="text-red-500">*</span>
+          </label>
+          <select
+            value={form.departmentId}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, departmentId: e.target.value }))
+            }
+            disabled={loadingDepartments}
+            className={`w-full rounded-lg border px-3 py-2.5 bg-white ${
+              errors.departmentId ? "border-red-400" : "border-line"
+            }`}
+          >
+            <option value="">
+              {loadingDepartments ? "Loading departments..." : "Select department"}
+            </option>
+            {departments.map((department) => (
+              <option key={department.id} value={department.id}>
+                {department.name}
+              </option>
+            ))}
+          </select>
+          {errors.departmentId && (
+            <p className="text-xs text-red-600">{errors.departmentId}</p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <label className="text-sm font-medium text-slate-700">
+              Working days <span className="text-red-500">*</span>
+            </label>
+            <span className="text-xs text-slate-400">
+              Select all days doctor sits in OPD
+            </span>
+          </div>
+
+          <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
+            {DAYS.map((day) => {
+              const active = form.workingDays.includes(day.value);
+
+              return (
+                <button
+                  key={day.value}
+                  type="button"
+                  onClick={() =>
+                    setForm((f) => ({
+                      ...f,
+                      workingDays: active
+                        ? f.workingDays.filter((item) => item !== day.value)
+                        : [...f.workingDays, day.value],
+                    }))
+                  }
+                  className={`rounded-lg border px-2 py-2 text-xs font-semibold transition ${
+                    active
+                      ? "border-teal-700 bg-teal-700 text-white"
+                      : "border-line bg-white text-slate-600 hover:bg-teal-50"
+                  }`}
+                >
+                  {day.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {errors.workingDays && (
+            <p className="text-xs text-red-600">{errors.workingDays}</p>
+          )}
+        </div>
 
         <TextField
           id="mobile"
@@ -695,6 +873,70 @@ export default function AdminDoctorsPage() {
           error={errors.specialization}
           required
         />
+
+        <div className="space-y-1.5">
+          <label className="text-sm font-medium text-slate-700">
+            Department <span className="text-red-500">*</span>
+          </label>
+          <select
+            value={form.departmentId}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, departmentId: e.target.value }))
+            }
+            disabled={loadingDepartments}
+            className={`w-full rounded-lg border px-3 py-2.5 bg-white ${
+              errors.departmentId ? "border-red-400" : "border-line"
+            }`}
+          >
+            <option value="">
+              {loadingDepartments ? "Loading departments..." : "Select department"}
+            </option>
+            {departments.map((department) => (
+              <option key={department.id} value={department.id}>
+                {department.name}
+              </option>
+            ))}
+          </select>
+          {errors.departmentId && (
+            <p className="text-xs text-red-600">{errors.departmentId}</p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-slate-700">
+            Working days <span className="text-red-500">*</span>
+          </label>
+          <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
+            {DAYS.map((day) => {
+              const active = form.workingDays.includes(day.value);
+
+              return (
+                <button
+                  key={day.value}
+                  type="button"
+                  onClick={() =>
+                    setForm((f) => ({
+                      ...f,
+                      workingDays: active
+                        ? f.workingDays.filter((item) => item !== day.value)
+                        : [...f.workingDays, day.value],
+                    }))
+                  }
+                  className={`rounded-lg border px-2 py-2 text-xs font-semibold transition ${
+                    active
+                      ? "border-teal-700 bg-teal-700 text-white"
+                      : "border-line bg-white text-slate-600 hover:bg-teal-50"
+                  }`}
+                >
+                  {day.label}
+                </button>
+              );
+            })}
+          </div>
+          {errors.workingDays && (
+            <p className="text-xs text-red-600">{errors.workingDays}</p>
+          )}
+        </div>
 
         <TextField
           id="emobile"

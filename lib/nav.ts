@@ -57,6 +57,11 @@ export const NAV: Record<Role, NavItem[]> = {
       href: "/patient/profile",
       icon: User,
     },
+    {
+      label: "Certificates",
+      href: "/patient/certificates",
+      icon: FileText,
+    },
   ],
 
   doctor: [
@@ -64,6 +69,11 @@ export const NAV: Record<Role, NavItem[]> = {
       label: "Dashboard",
       href: "/doctor/dashboard",
       icon: LayoutDashboard,
+    },
+    {
+      label: "OPD Management",
+      href: "/doctor/opd",
+      icon: Users,
     },
     {
       label: "Patient Queue",
@@ -78,6 +88,11 @@ export const NAV: Record<Role, NavItem[]> = {
     {
       label: "Prescription",
       href: "/doctor/prescription",
+      icon: FileText,
+    },
+    {
+      label: "Medical Certificates",
+      href: "/doctor/medicalcertificates",
       icon: FileText,
     },
   ],
@@ -122,9 +137,9 @@ export const NAV: Record<Role, NavItem[]> = {
       icon: CalendarClock,
     },
     {
-      label: "OPD Management",
-      href: "/admin/opd",
-      icon: Users,
+      label: "Medical Certificates",
+      href: "/admin/medical-certificates",
+      icon: FileText,
     },
     {
       label: "Inventory",

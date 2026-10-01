@@ -9,6 +9,7 @@ import {
   CheckCircle2,
   Clock,
   Pill,
+  Printer,
   RefreshCw,
   TriangleAlert,
   XCircle,
@@ -30,9 +31,7 @@ export default function ClinicPrescriptionDetailsPage() {
 
   const prescriptionId = String(params?.id ?? "");
 
-  const [details, setDetails] = useState<PrescriptionDetails | null>(
-    null,
-  );
+  const [details, setDetails] = useState<PrescriptionDetails | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -121,8 +120,7 @@ export default function ClinicPrescriptionDetailsPage() {
 
     const resolved = given + unavailable;
 
-    const progress =
-      total > 0 ? Math.min(100, (resolved / total) * 100) : 0;
+    const progress = total > 0 ? Math.min(100, (resolved / total) * 100) : 0;
 
     return {
       total,
@@ -203,9 +201,7 @@ export default function ClinicPrescriptionDetailsPage() {
 
       console.log("Complete dispensing response:", response);
 
-      setSuccessMessage(
-        "Medicine dispensing completed successfully.",
-      );
+      setSuccessMessage("Medicine dispensing completed successfully.");
 
       await loadDetails(true);
     } catch (error: any) {
@@ -266,10 +262,7 @@ export default function ClinicPrescriptionDetailsPage() {
 
         <Panel>
           <div className="py-12 text-center">
-            <TriangleAlert
-              size={28}
-              className="mx-auto text-red-500"
-            />
+            <TriangleAlert size={28} className="mx-auto text-red-500" />
 
             <p className="mt-3 text-sm text-red-500">
               {error || "Prescription details not found"}
@@ -302,9 +295,7 @@ export default function ClinicPrescriptionDetailsPage() {
   const isCompleted = prescription.status === "COMPLETED";
 
   const canComplete =
-    medicineStats.total > 0 &&
-    medicineStats.pending === 0 &&
-    !isCompleted;
+    medicineStats.total > 0 && medicineStats.pending === 0 && !isCompleted;
 
   // ========================================
   // PAGE
@@ -342,10 +333,7 @@ export default function ClinicPrescriptionDetailsPage() {
             disabled={refreshing}
             className="inline-flex items-center justify-center gap-2 rounded-lg border border-line bg-white px-4 py-2.5 text-sm font-semibold text-ink hover:border-teal-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            <RefreshCw
-              size={14}
-              className={refreshing ? "animate-spin" : ""}
-            />
+            <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
 
             {refreshing ? "Refreshing..." : "Refresh"}
           </button>
@@ -366,10 +354,7 @@ export default function ClinicPrescriptionDetailsPage() {
 
       {successMessage && (
         <div className="flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">
-          <CheckCircle2
-            size={18}
-            className="mt-0.5 shrink-0"
-          />
+          <CheckCircle2 size={18} className="mt-0.5 shrink-0" />
 
           <p>{successMessage}</p>
         </div>
@@ -387,9 +372,7 @@ export default function ClinicPrescriptionDetailsPage() {
                 {tokenCode ? (
                   <MiniTokenChip code={tokenCode} />
                 ) : (
-                  <span className="text-xs text-slate-400">
-                    No token
-                  </span>
+                  <span className="text-xs text-slate-400">No token</span>
                 )}
 
                 <StatusBadge status={prescription.status} />
@@ -407,9 +390,7 @@ export default function ClinicPrescriptionDetailsPage() {
             </div>
 
             <div className="text-left sm:text-right">
-              <p className="text-xs text-slate-400">
-                Prescription ID
-              </p>
+              <p className="text-xs text-slate-400">Prescription ID</p>
 
               <p className="mt-1 text-sm font-semibold text-ink">
                 #{prescription.prescription_id}
@@ -436,9 +417,7 @@ export default function ClinicPrescriptionDetailsPage() {
                   ? `${prescription.age} years`
                   : "Age —"}
 
-                {prescription.gender
-                  ? ` / ${prescription.gender}`
-                  : ""}
+                {prescription.gender ? ` / ${prescription.gender}` : ""}
               </p>
             </div>
 
@@ -467,9 +446,7 @@ export default function ClinicPrescriptionDetailsPage() {
             <div className="flex items-center gap-2 border-t border-line pt-5 text-xs text-slate-500">
               <Clock size={14} />
 
-              <span>
-                Prescribed: {prescription.prescribed_at}
-              </span>
+              <span>Prescribed: {prescription.prescribed_at}</span>
             </div>
           )}
 
@@ -501,9 +478,7 @@ export default function ClinicPrescriptionDetailsPage() {
             </div>
 
             <div>
-              <p className="text-xs text-slate-500">
-                Total medicines
-              </p>
+              <p className="text-xs text-slate-500">Total medicines</p>
 
               <p className="mt-0.5 text-xl font-bold text-ink">
                 {medicineStats.total}
@@ -519,9 +494,7 @@ export default function ClinicPrescriptionDetailsPage() {
             </div>
 
             <div>
-              <p className="text-xs text-slate-500">
-                Resolved
-              </p>
+              <p className="text-xs text-slate-500">Resolved</p>
 
               <p className="mt-0.5 text-xl font-bold text-ink">
                 {medicineStats.resolved}
@@ -537,9 +510,7 @@ export default function ClinicPrescriptionDetailsPage() {
             </div>
 
             <div>
-              <p className="text-xs text-slate-500">
-                Pending
-              </p>
+              <p className="text-xs text-slate-500">Pending</p>
 
               <p className="mt-0.5 text-xl font-bold text-ink">
                 {medicineStats.pending}
@@ -589,9 +560,7 @@ export default function ClinicPrescriptionDetailsPage() {
 
       <div>
         <div className="mb-4">
-          <h2 className="font-display text-lg font-bold text-ink">
-            Medicines
-          </h2>
+          <h2 className="font-display text-lg font-bold text-ink">Medicines</h2>
 
           <p className="mt-1 text-sm text-slate-500">
             Dispense each prescribed medicine or mark it unavailable.
@@ -601,10 +570,7 @@ export default function ClinicPrescriptionDetailsPage() {
         {medicines.length === 0 ? (
           <Panel>
             <div className="py-10 text-center">
-              <Pill
-                size={28}
-                className="mx-auto text-slate-300"
-              />
+              <Pill size={28} className="mx-auto text-slate-300" />
 
               <p className="mt-3 text-sm font-semibold text-ink">
                 No medicines found
@@ -618,11 +584,9 @@ export default function ClinicPrescriptionDetailsPage() {
         ) : (
           <div className="space-y-4">
             {medicines.map((medicine, index) => {
-              const isPending =
-                medicine.dispensing_status === "PENDING";
+              const isPending = medicine.dispensing_status === "PENDING";
 
-              const isGiven =
-                medicine.dispensing_status === "GIVEN";
+              const isGiven = medicine.dispensing_status === "GIVEN";
 
               const isUnavailable =
                 medicine.dispensing_status === "UNAVAILABLE";
@@ -630,20 +594,13 @@ export default function ClinicPrescriptionDetailsPage() {
               const isProcessing =
                 processingItemId === medicine.prescription_item_id;
 
-              const requiredQuantity = Number(
-                medicine.quantity ?? 0,
-              );
+              const requiredQuantity = Number(medicine.quantity ?? 0);
 
-              const availableStock = Number(
-                medicine.available_stock ?? 0,
-              );
+              const availableStock = Number(medicine.available_stock ?? 0);
 
-              const givenQuantity = Number(
-                medicine.given_quantity ?? 0,
-              );
+              const givenQuantity = Number(medicine.given_quantity ?? 0);
 
-              const stockAvailable =
-                availableStock >= requiredQuantity;
+              const stockAvailable = availableStock >= requiredQuantity;
 
               return (
                 <Panel key={String(medicine.prescription_item_id)}>
@@ -671,18 +628,13 @@ export default function ClinicPrescriptionDetailsPage() {
 
                       {/* STATUS */}
 
-                      <MedicineStatus
-                        status={medicine.dispensing_status}
-                      />
+                      <MedicineStatus status={medicine.dispensing_status} />
                     </div>
 
                     {/* PRESCRIPTION DETAILS */}
 
                     <div className="grid gap-4 border-t border-line pt-4 sm:grid-cols-2 lg:grid-cols-4">
-                      <MedicineInfo
-                        label="Dose"
-                        value={medicine.dose || "—"}
-                      />
+                      <MedicineInfo label="Dose" value={medicine.dose || "—"} />
 
                       <MedicineInfo
                         label="Frequency"
@@ -710,9 +662,7 @@ export default function ClinicPrescriptionDetailsPage() {
 
                         <p
                           className={`mt-1 text-sm font-bold ${
-                            stockAvailable
-                              ? "text-emerald-700"
-                              : "text-red-600"
+                            stockAvailable ? "text-emerald-700" : "text-red-600"
                           }`}
                         >
                           {availableStock}
@@ -720,9 +670,7 @@ export default function ClinicPrescriptionDetailsPage() {
                       </div>
 
                       <div>
-                        <p className="text-xs text-slate-400">
-                          Given quantity
-                        </p>
+                        <p className="text-xs text-slate-400">Given quantity</p>
 
                         <p className="mt-1 text-sm font-bold text-ink">
                           {givenQuantity}
@@ -745,36 +693,26 @@ export default function ClinicPrescriptionDetailsPage() {
                           type="button"
                           disabled={isProcessing}
                           onClick={() =>
-                            handleDispenseMedicine(
-                              medicine,
-                              "UNAVAILABLE",
-                            )
+                            handleDispenseMedicine(medicine, "UNAVAILABLE")
                           }
                           className="inline-flex items-center justify-center gap-2 rounded-lg border border-red-200 bg-white px-4 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           <XCircle size={15} />
 
-                          {isProcessing
-                            ? "Processing..."
-                            : "Mark unavailable"}
+                          {isProcessing ? "Processing..." : "Mark unavailable"}
                         </button>
 
                         <button
                           type="button"
                           disabled={isProcessing || !stockAvailable}
                           onClick={() =>
-                            handleDispenseMedicine(
-                              medicine,
-                              "GIVEN",
-                            )
+                            handleDispenseMedicine(medicine, "GIVEN")
                           }
                           className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-800 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-900 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           <Check size={15} />
 
-                          {isProcessing
-                            ? "Processing..."
-                            : "Give medicine"}
+                          {isProcessing ? "Processing..." : "Give medicine"}
                         </button>
                       </div>
                     )}
@@ -784,11 +722,8 @@ export default function ClinicPrescriptionDetailsPage() {
                     {isGiven && (
                       <div className="flex items-center gap-2 border-t border-line pt-4 text-sm font-semibold text-emerald-700">
                         <CheckCircle2 size={17} />
-
                         Medicine dispensed
-                        {givenQuantity > 0
-                          ? ` — ${givenQuantity} given`
-                          : ""}
+                        {givenQuantity > 0 ? ` — ${givenQuantity} given` : ""}
                       </div>
                     )}
 
@@ -797,7 +732,6 @@ export default function ClinicPrescriptionDetailsPage() {
                     {isUnavailable && (
                       <div className="flex items-center gap-2 border-t border-line pt-4 text-sm font-semibold text-red-600">
                         <XCircle size={17} />
-
                         Medicine marked unavailable
                       </div>
                     )}
@@ -836,9 +770,85 @@ export default function ClinicPrescriptionDetailsPage() {
           </div>
 
           {isCompleted ? (
-            <div className="inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-50 px-4 py-2.5 text-sm font-semibold text-emerald-700">
-              <CheckCircle2 size={16} />
-              Completed
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <div className="inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-50 px-4 py-2.5 text-sm font-semibold text-emerald-700">
+                <CheckCircle2 size={16} />
+                Completed
+              </div>
+
+              <button
+                type="button"
+                onClick={async () => {
+                  let receiptWindow: Window | null = null;
+
+                  try {
+                    // Open window immediately so browser popup blocker
+                    // does not block it after async API call.
+                    receiptWindow = window.open(
+                      "",
+                      "_blank",
+                      "width=900,height=900",
+                    );
+
+                    if (!receiptWindow) {
+                      alert(
+                        "Please allow pop-ups for this website to print the receipt.",
+                      );
+                      return;
+                    }
+
+                    receiptWindow.document.write(`
+      <html>
+        <head>
+          <title>Loading Receipt...</title>
+        </head>
+
+        <body
+          style="
+            font-family: Arial;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+          "
+        >
+          Loading receipt...
+        </body>
+      </html>
+    `);
+
+                    receiptWindow.document.close();
+
+                    // Call BACKEND receipt API
+                    const response = await clinicService.getPrescriptionReceipt(
+                      prescription.prescription_id,
+                    );
+
+                    // Backend returns complete HTML
+                    receiptWindow.document.open();
+
+                    receiptWindow.document.write(response.data);
+
+                    receiptWindow.document.close();
+                  } catch (error: any) {
+                    console.error("Receipt print error:", error);
+
+                    if (receiptWindow) {
+                      receiptWindow.close();
+                    }
+
+                    alert(
+                      error?.response?.data?.message ||
+                        error?.message ||
+                        "Unable to generate receipt.",
+                    );
+                  }
+                }}
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-800 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-900"
+              >
+                <Printer size={16} />
+                Print Receipt
+              </button>
             </div>
           ) : (
             <button
@@ -849,10 +859,7 @@ export default function ClinicPrescriptionDetailsPage() {
             >
               {completing ? (
                 <>
-                  <RefreshCw
-                    size={15}
-                    className="animate-spin"
-                  />
+                  <RefreshCw size={15} className="animate-spin" />
                   Completing...
                 </>
               ) : (
@@ -873,20 +880,12 @@ export default function ClinicPrescriptionDetailsPage() {
 // MEDICINE INFO
 // ========================================
 
-function MedicineInfo({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
+function MedicineInfo({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <p className="text-xs text-slate-400">{label}</p>
 
-      <p className="mt-1 text-sm font-semibold text-ink">
-        {value}
-      </p>
+      <p className="mt-1 text-sm font-semibold text-ink">{value}</p>
     </div>
   );
 }

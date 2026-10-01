@@ -39,8 +39,15 @@ export interface AdminDoctor {
   name: string;
   qualification: string | null;
   specialization: string | null;
+
+  departmentId?: number | null;
+  departmentName?: string | null;
+
+  workingDays?: string[];
+
   mobile: string | null;
   email: string | null;
+
   status?: "ACTIVE" | "INACTIVE" | string;
   is_active?: boolean | number;
 }
@@ -50,6 +57,10 @@ export interface AddDoctorPayload {
   name: string;
   qualification: string;
   specialization: string;
+
+  departmentId: number;
+  workingDays: string[];
+
   mobile: string;
   email: string;
   password: string;
@@ -59,6 +70,10 @@ export interface UpdateDoctorPayload {
   name?: string;
   qualification?: string;
   specialization?: string;
+
+  departmentId?: number;
+  workingDays?: string[];
+
   mobile?: string;
   email?: string;
   status?: "ACTIVE" | "INACTIVE";
@@ -66,6 +81,18 @@ export interface UpdateDoctorPayload {
 
 export const getDoctors = async (): Promise<AdminDoctor[]> => {
   const response = await api.get("/admin/doctors");
+
+  return response.data?.data || response.data || [];
+};
+
+export interface AdminDepartment {
+  id: number;
+  name: string;
+  is_active?: boolean | number;
+}
+
+export const getAdminDepartments = async (): Promise<AdminDepartment[]> => {
+  const response = await api.get("/certificates/departments");
 
   return response.data?.data || response.data || [];
 };
@@ -78,14 +105,7 @@ export const addDoctor = async (data: AddDoctorPayload) => {
 
 export const updateDoctor = async (
   id: number | string,
-  data: {
-    name?: string;
-    qualification?: string;
-    specialization?: string;
-    mobile?: string;
-    email?: string;
-    status?: "ACTIVE" | "INACTIVE";
-  },
+  data: UpdateDoctorPayload,
 ) => {
   const response = await api.put(`/admin/doctors/${id}`, data);
   return response.data;
@@ -176,7 +196,7 @@ export interface DoctorRoomAssignment {
 }
 
 export interface AssignDoctorPayload {
-   doctorId: number;
+  doctorId: number;
   roomId: number;
   assignmentDate: string;
   startTime: string;
@@ -210,7 +230,14 @@ export const getDoctorRoomAssignments = async (): Promise<{
 
 export const updateDoctorRoomAssignment = async (
   id: number,
-  data: UpdateDoctorRoomAssignmentPayload,
+  data: {
+    doctorId?: number;
+    roomId?: number;
+    assignmentDate?: string;
+    startTime?: string;
+    endTime?: string;
+    isActive?: boolean;
+  },
 ) => {
   const response = await api.put(`/admin/doctor-room-assignments/${id}`, data);
 
@@ -320,14 +347,12 @@ export interface AdminPrescription {
   completedAt: string | null;
 }
 
-
 // GET ALL
 export const getPrescriptions = async (): Promise<AdminPrescription[]> => {
   const response = await api.get("/admin/prescriptions");
 
   return response.data?.data || [];
 };
-
 
 // GET CANCELLED
 export const getCancelledPrescriptions = async (): Promise<
@@ -338,17 +363,16 @@ export const getCancelledPrescriptions = async (): Promise<
   return response.data?.data || [];
 };
 
-
 // CANCEL
 export const cancelPrescription = async (
   prescriptionId: number,
-  reason: string
+  reason: string,
 ) => {
   const response = await api.post(
     `/admin/prescriptions/${prescriptionId}/cancel`,
     {
       reason,
-    }
+    },
   );
 
   return response.data;
@@ -361,19 +385,14 @@ export const dispenseMedicine = async (
   itemId: number,
   status: "GIVEN" | "UNAVAILABLE",
 ) => {
-  const response = await api.put(
-    `/admin/dispensing/${itemId}`,
-    {
-      status,
-    },
-  );
+  const response = await api.put(`/admin/dispensing/${itemId}`, {
+    status,
+  });
 
   return response.data;
 };
 
-export const completeDispensing = async (
-  prescriptionId: number,
-) => {
+export const completeDispensing = async (prescriptionId: number) => {
   const response = await api.put(
     `/admin/dispensing/${prescriptionId}/complete`,
   );
@@ -412,18 +431,12 @@ export interface DayEndReport {
 }
 
 export const closeDay = async (date?: string) => {
-  const response = await api.post(
-    "/admin/day-end/close",
-    date ? { date } : {}
-  );
+  const response = await api.post("/admin/day-end/close", date ? { date } : {});
 
   return response.data;
 };
 
-export const getReports = async (params?: {
-  from?: string;
-  to?: string;
-}) => {
+export const getReports = async (params?: { from?: string; to?: string }) => {
   const response = await api.get("/admin/day-end/reports", {
     params,
   });
@@ -431,74 +444,9 @@ export const getReports = async (params?: {
   return response.data;
 };
 
-export const getReportById = async (
-  id: number | string
-) => {
-  const response = await api.get(
-    `/admin/day-end/reports/${id}`
-  );
-
-  return response.data;
-};
-// ==============================
-// OPD MANAGEMENT
-// ==============================
-
-export interface AdminOpdRoom {
-  id: number;
-  number: string;
-
-  roomName: string | null;
-  floor: string | null;
-
-  doctorId: number | null;
-  doctorName: string | null;
-  specialization: string | null;
-
-  opdSessionId: number | null;
-
-  status:
-    | "NOT_STARTED"
-    | "RUNNING"
-    | "ENDED"
-    | "CLOSED"
-    | null;
-
-  startedAt: string | null;
-  endedAt: string | null;
-
-  currentToken: string | null;
-  totalPatients: number;
-}
-
-export const getTodayOpd = async () => {
-  const response = await api.get("/admin/opd/today");
+export const getReportById = async (id: number | string) => {
+  const response = await api.get(`/admin/day-end/reports/${id}`);
 
   return response.data;
 };
 
-export const startOpd = async (
-  opdSessionId: number
-) => {
-  const response = await api.post(
-    "/admin/opd/start",
-    {
-      opdSessionId,
-    }
-  );
-
-  return response.data;
-};
-
-export const endOpd = async (
-  opdSessionId: number
-) => {
-  const response = await api.post(
-    "/admin/opd/end",
-    {
-      opdSessionId,
-    }
-  );
-
-  return response.data;
-};
